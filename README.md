@@ -100,3 +100,22 @@ sudo dpkg -i *.deb
 ```
 
 Reboot, hold shift down while Grub is loading, select the new kernel.
+
+
+## Adding NVIDIA Driver DKMS Support to 4.18.X Kernel
+As of July 2018, new Linux kernels had made some changes causing incompatibilities with Nvidia proprietary drivers.  This can be fixed easily by applying a patch to the Nvidia DKMS code to properly expose features in the DRM, which will allow the DKMS to build properly.
+
+Download and install the Nvidia drivers from the graphics team ppa
+
+```
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt-get update
+apt-get install nvidia-390 nvidia-dkms-390
+```
+
+The DKMS portion may fail to correctly build the DKMS for your 4.18 kernel.  If it does, apply the nvidia-drm-drv.c file.
+```
+cp razerfiles/nvidia-drm-drv.c /usr/src/nvidia-390.67/nvidia-drm/nvidia-drm-drv.c
+sudo dkms build -m nvidia -v 390.67 -k $(uname -r) -a x86_64
+sudo dkms install -m nvidia -v 390.67 -k $(uname -r) -a x86_64
+```
